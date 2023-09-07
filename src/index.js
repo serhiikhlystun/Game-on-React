@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
+// Component for dispaying a cell
 function Square({ value, handleClick }) {
   return (
     <button className="square" onClick={handleClick}>
@@ -10,6 +11,7 @@ function Square({ value, handleClick }) {
   );
 }
 
+// Component for the main playing field 
 function Board({ squares, handleClick }) {
   function renderSquare(i) {
     return <Square value={squares[i]} handleClick={() => handleClick(i)} />;
@@ -36,10 +38,15 @@ function Board({ squares, handleClick }) {
   );
 }
 
+// Main logic of game
 function Game() {
+  // State for save an array of cells
   const [squares, setSquares] = useState(Array(9).fill(null));
+  // State to save an array of clicked cells for history
   const [history, setHistory] = useState([{ squares }]);
+  // State to determine the next X or O
   const [xIsNext, setXIsNext] = useState(true);
+  // State for return to certain move
   const [stepNumber, setStepNumber] = useState(0);
 
   function handleClick(i) {
@@ -47,18 +54,21 @@ function Game() {
     const current = newHistory[newHistory.length - 1];
     const newSquares = current.squares.slice();
 
+    // Determining the end of the game
     if (calculateWinner(newSquares) || newSquares[i]) {
       return;
     }
 
     newSquares[i] = xIsNext ? "X" : "O";
 
+    // Records of updated data to states
     setHistory(newHistory.concat([{ squares: newSquares }]));
     setSquares(newSquares);
     setStepNumber(newHistory.length);
     setXIsNext(!xIsNext);
   }
 
+  // Returning to a certain move of history
   function jumpTo(step) {
     setStepNumber(step), setXIsNext(step % 2 === 0);
   }
@@ -68,6 +78,8 @@ function Game() {
 
   const moves = history.map((step, move) => {
     const desc = move ? "Go to move #" + move : "Go to game start";
+    
+    // Show list of doing moves
     return (
       <li key={move}>
         <button onClick={() => jumpTo(move)}>{desc}</button>
@@ -100,6 +112,7 @@ function Game() {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<Game />);
 
+// Determinig of winner
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
